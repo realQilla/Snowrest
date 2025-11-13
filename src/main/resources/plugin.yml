@@ -1,0 +1,8 @@
+name: Snowrest
+version: '0.1.0'
+main: net.qilla.snowrest.Snowrest
+api-version: '1.21'
+load: STARTUP
+authors: [ qilla ]
+depend: [ ProtocolLib ]
+website: https://qilla.net
