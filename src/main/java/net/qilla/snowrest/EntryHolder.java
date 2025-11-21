@@ -3,8 +3,6 @@ package net.qilla.snowrest;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import java.util.Set;
-
 public final class EntryHolder {
     private static final Logger LOGGER = Snowrest.logger();
 

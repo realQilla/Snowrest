@@ -6,12 +6,13 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.qilla.snowrest.bitstorage.ProcessedBits;
 import net.qilla.snowrest.data.DataMasks;
 import net.qilla.snowrest.data.DataPersistent;
+import org.jetbrains.annotations.NotNull;
 
 public final class ProcessedChunk {
     private final FriendlyByteBuf byteBuf;
     private final ChunkSection[] sections;
 
-    private ProcessedChunk(FriendlyByteBuf byteBuf) {
+    private ProcessedChunk(@NotNull FriendlyByteBuf byteBuf) {
         this.byteBuf = byteBuf;
         this.sections = separateSections();
     }
@@ -129,13 +130,20 @@ public final class ProcessedChunk {
     public byte[] buildBuffer() {
         FriendlyByteBuf byteBuf = new FriendlyByteBuf(Unpooled.buffer());
 
-        for(ChunkSection section : sections) {
-            byteBuf.writeShort(section.blockCount());
+        try {
+            for(ChunkSection section : sections) {
+                byteBuf.writeShort(section.blockCount());
 
-            writeBlockStates(byteBuf, section.blockStates());
-            writeBiomes(byteBuf, section.biomes());
+                writeBlockStates(byteBuf, section.blockStates());
+                writeBiomes(byteBuf, section.biomes());
+            }
+            byte[] buffer = new byte[byteBuf.readableBytes()];
+            byteBuf.readBytes(buffer);
+
+            return buffer;
+        } finally {
+            byteBuf.release();
         }
-        return byteBuf.array();
     }
 
     private void writeBlockStates(FriendlyByteBuf byteBuf, PaletteContainer blockStates) {
