@@ -2,13 +2,11 @@ package net.qilla.snowrest.outdated;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
-import net.qilla.snowrest.util.PrefixedArray;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public final class DissectChunkPacket {
-
     private final FriendlyByteBuf byteBuf;
     private final int chunkX; //Integer
     private final int chunkZ; //Integer

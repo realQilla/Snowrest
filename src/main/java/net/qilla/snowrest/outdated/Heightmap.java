@@ -1,7 +1,5 @@
 package net.qilla.snowrest.outdated;
 
-import net.qilla.snowrest.util.PrefixedArray;
-
 public final class Heightmap {
 
     private int type;

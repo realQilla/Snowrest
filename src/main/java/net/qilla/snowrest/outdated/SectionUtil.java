@@ -1,8 +1,9 @@
-package net.qilla.snowrest.util;
+package net.qilla.snowrest.outdated;
 
 import io.papermc.paper.math.BlockPosition;
 import io.papermc.paper.math.Position;
-import net.qilla.snowrest.bitstorage.BitStorage;
+import net.qilla.snowrest.bitstorage.ProcessedBits;
+import net.qilla.snowrest.bitstorage.ProcessedBitsImpl;
 import net.qilla.snowrest.data.DataPersistent;
 
 import java.util.ArrayList;
@@ -10,8 +11,8 @@ import java.util.List;
 
 public final class SectionUtil {
     public static int[][] getSectionPositionsFromHeightmap(long[] heightMapData, int yOffset) {
-        BitStorage heightmapData = BitStorage.ofPacked(DataPersistent.HEIGHTMAP_BPE, heightMapData.length, heightMapData);
-        int[] heights = heightmapData.unpack(DataPersistent.BLOCKS_PER_HEIGHTMAP);
+        ProcessedBits heightmapData = ProcessedBits.packed(DataPersistent.HEIGHTMAP_BPE, heightMapData, DataPersistent.BLOCKS_PER_HEIGHTMAP);
+        int[] heights = heightmapData.unpacked();
         List<List<Integer>> sectionPositions = new ArrayList<>(24);
 
         while(sectionPositions.size() < 24) {

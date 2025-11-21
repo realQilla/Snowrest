@@ -1,4 +1,4 @@
-package net.qilla.snowrest.util;
+package net.qilla.snowrest.outdated;
 
 import java.util.List;
 
