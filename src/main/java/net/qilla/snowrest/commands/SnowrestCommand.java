@@ -5,63 +5,164 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.qilla.snowrest.Snowrest;
 import net.qilla.snowrest.config.SnowrestConfig;
 import net.qilla.snowrest.data.TxtDecorations;
+import org.bukkit.block.BlockState;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 public final class SnowrestCommand {
-
     private final String command = "snowrest";
-    private final String enable = "enable";
-    private final String disable = "disable";
-    private final String settings = "settings";
-    private final String surface_replacement = "surface_replacement";
-    private final String water_replacement = "water_replacement";
-    private final String snowy_weather = "snowy_weather";
+    private final String enableArg = "enable";
+    private final String disableArg = "disable";
+    private final String settingsArg = "settings";
+    private final String surfaceArg = "surface";
+    private final String waterArg = "water";
+    private final String snowingArg = "snowing";
+    private final String blockArg = "block";
+    private final String addArg = "add";
+    private final String removeArg = "remove";
+    private final String resetArg = "reset";
+    private final String configArg = "config";
+    private final String saveArg = "save";
 
     private final Commands commands;
     private final SnowrestConfig config;
+    private final Snowrest plugin;
 
     public SnowrestCommand(@NotNull final Snowrest plugin, @NotNull final Commands commands) {
         this.commands = commands;
         this.config = plugin.config();
+        this.plugin = plugin;
     }
 
     public void register() {
         final LiteralArgumentBuilder<CommandSourceStack> commandNode = Commands.literal(command)
                 .requires(src -> src.getSender().isOp())
-                .then(Commands.literal(enable)
+                .then(Commands.literal(enableArg)
                         .executes(cmd -> globalModule(cmd, true))
-                ).then(Commands.literal(disable)
+                ).then(Commands.literal(disableArg)
                         .executes(cmd -> globalModule(cmd, false))
                 );
 
-        final LiteralArgumentBuilder<CommandSourceStack> settingsNode = Commands.literal(settings)
-                .then(Commands.literal(surface_replacement)
-                        .then(Commands.literal(enable)
+        final LiteralArgumentBuilder<CommandSourceStack> settingsNode = Commands.literal(settingsArg)
+                .then(Commands.literal(surfaceArg)
+                        .then(Commands.literal(enableArg)
                                 .executes(cmd -> surfaceReplacement(cmd, true)))
-                        .then(Commands.literal(disable)
+                        .then(Commands.literal(disableArg)
                                 .executes(cmd -> surfaceReplacement(cmd, false)))
-                ).then(Commands.literal(water_replacement)
-                        .then(Commands.literal(enable)
+                        .then(Commands.literal(addArg)
+                                .then(Commands.argument(blockArg, ArgumentTypes.blockState())
+                                        .executes(cmd -> surfaceBlocks(cmd, true)))
+                        ).then(Commands.literal(removeArg)
+                                .then(Commands.argument(blockArg, ArgumentTypes.blockState())
+                                        .suggests((ctx, builder) -> {
+                                            String argument = builder.getRemaining();
+
+                                            for(BlockState blockState : config.surfaceReplacement()) {
+                                                String name = blockState.getBlockData().getAsString();
+
+                                                if(name.regionMatches(true, 0, argument, 0, argument.length()))
+                                                    builder.suggest(name);
+                                            }
+
+                                            return builder.buildFuture();
+                                        }).executes(cmd -> surfaceBlocks(cmd, false)))
+                        )
+                ).then(Commands.literal(waterArg)
+                        .then(Commands.literal(enableArg)
                                 .executes(cmd -> waterReplacement(cmd, true)))
-                        .then(Commands.literal(disable)
+                        .then(Commands.literal(disableArg)
                                 .executes(cmd -> waterReplacement(cmd, false)))
-                )
-                .then(Commands.literal(snowy_weather)
-                        .then(Commands.literal(enable)
+                        .then(Commands.literal(addArg)
+                                .then(Commands.argument(blockArg, ArgumentTypes.blockState())
+                                        .executes(cmd -> waterBlocks(cmd, true)))
+                        ).then(Commands.literal(removeArg)
+                                .then(Commands.argument(blockArg, ArgumentTypes.blockState())
+                                        .suggests((ctx, builder) -> {
+                                            String argument = builder.getRemaining();
+
+                                            for(BlockState blockState : config.waterReplacement()) {
+                                                String name = blockState.getBlockData().getAsString();
+
+                                                if(name.regionMatches(true, 0, argument, 0, argument.length()))
+                                                    builder.suggest(name);
+                                            }
+
+                                            return builder.buildFuture();
+                                        }).executes(cmd -> waterBlocks(cmd, false)))
+                        )
+                ).then(Commands.literal(snowingArg)
+                        .then(Commands.literal(enableArg)
                                 .executes(cmd -> snowyWeather(cmd, true)))
-                        .then(Commands.literal(disable)
+                        .then(Commands.literal(disableArg)
                                 .executes(cmd -> snowyWeather(cmd, false)))
+                ).then(Commands.literal(resetArg)
+                        .executes(this::reset)
                 );
 
         commands.register(commandNode
                 .then(settingsNode)
                 .build()
         );
+    }
+
+    private int reset(CommandContext<CommandSourceStack> ctx) {
+        final CommandSender sender = ctx.getSource().getSender();
+
+        config.resetDefaults();
+        sender.sendMessage(MiniMessage.miniMessage().deserialize("<green>Snowrest blocks have been reset to their defaults.</green>"));
+
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private int surfaceBlocks(CommandContext<CommandSourceStack> ctx, boolean add) {
+        final CommandSender sender = ctx.getSource().getSender();
+        BlockState blockState = ctx.getArgument(blockArg, BlockState.class);
+
+        if(add) {
+            if(config.surfaceReplacement().contains(blockState)) {
+                sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Block \"" + blockState.getBlockData().getAsString() + "\" is already added to the surface replacement list.</red>"));
+            } else {
+                config.addSurfaceCover(blockState);
+                sender.sendMessage(MiniMessage.miniMessage().deserialize("<green>Block \"" + blockState.getBlockData().getAsString() + "\" has been added to the surface replacement list.</green>"));
+            }
+        } else {
+            if(!config.surfaceReplacement().contains(blockState)) {
+                sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Block \"" + blockState.getBlockData().getAsString() + "\" is not added to the surface replacement list.</red>"));
+            } else {
+                config.removeSurfaceCover(blockState);
+                sender.sendMessage(MiniMessage.miniMessage().deserialize("<green>Block \"" + blockState.getBlockData().getAsString() + "\" has been removed from the surface replacement list.</green>"));
+            }
+        }
+
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private int waterBlocks(CommandContext<CommandSourceStack> ctx, boolean add) {
+        final CommandSender sender = ctx.getSource().getSender();
+        BlockState blockState = ctx.getArgument(blockArg, BlockState.class);
+
+        if(add) {
+            if(config.waterReplacement().contains(blockState)) {
+                sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Block \"" + blockState.getBlockData().getAsString() + "\" is already added to the water replacement list.</red>"));
+            } else {
+                config.addWaterReplacement(blockState);
+                sender.sendMessage(MiniMessage.miniMessage().deserialize("<green>Block \"" + blockState.getBlockData().getAsString() + "\" has been added to the water replacement list.</green>"));
+            }
+        } else {
+            if(!config.waterReplacement().contains(blockState)) {
+                sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Block \"" + blockState.getBlockData().getAsString() + "\" is not added to the water replacement list.</red>"));
+            } else {
+                config.removeWaterReplacement(blockState);
+                sender.sendMessage(MiniMessage.miniMessage().deserialize("<green>Block \"" + blockState.getBlockData().getAsString() + "\" has been removed from the water replacement list.</green>"));
+            }
+        }
+
+        return Command.SINGLE_SUCCESS;
     }
 
     private int surfaceReplacement(CommandContext<CommandSourceStack> ctx, boolean enable) {

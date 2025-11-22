@@ -6,6 +6,7 @@ import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.qilla.snowrest.commands.SnowrestCommand;
 import net.qilla.snowrest.config.SnowrestConfig;
+import net.qilla.snowrest.file.SnowrestConfigFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -13,13 +14,15 @@ import org.slf4j.Logger;
 public final class Snowrest extends JavaPlugin {
     private static Logger LOGGER;
     private ProtocolManager protocolManager;
+    private SnowrestConfigFile configFile;
     private SnowrestConfig config;
 
     @Override
     public void onLoad() {
         LOGGER = getSLF4JLogger();
         this.protocolManager = ProtocolLibrary.getProtocolManager();
-        this.config = SnowrestConfig.ofDefault();
+        this.configFile = new SnowrestConfigFile(this);
+        this.config = new SnowrestConfig(configFile);
         PacketListeners.init(this);
     }
 
@@ -35,6 +38,11 @@ public final class Snowrest extends JavaPlugin {
     public @NotNull ProtocolManager protocolManager() {
         if(protocolManager == null) throw new IllegalStateException("ProtocolManager not yet initialized");
         return protocolManager;
+    }
+
+    public @NotNull SnowrestConfigFile configFile() {
+        if(configFile == null) throw new IllegalStateException("ConfigFile not yet initialized");
+        return configFile;
     }
 
     public @NotNull SnowrestConfig config() {

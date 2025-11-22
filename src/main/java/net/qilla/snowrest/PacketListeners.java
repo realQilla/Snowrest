@@ -9,18 +9,23 @@ import com.comphenix.protocol.wrappers.WrappedLevelChunkData;
 import io.netty.buffer.Unpooled;
 import net.qilla.snowrest.config.SnowrestConfig;
 import net.qilla.snowrest.data.DataPersistent;
-import net.qilla.snowrest.data.RegistryIDs;
+import net.qilla.snowrest.data.RegistryEntries;
 import net.qilla.snowrest.editor.ContainerEditor;
 import net.qilla.snowrest.editor.HeightmapEditor;
+import net.qilla.snowrest.util.BlockConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
+import java.util.Arrays;
+import java.util.stream.IntStream;
 
 public final class PacketListeners {
     private static final Logger LOGGER = Snowrest.logger();
     private static PacketListeners INSTANCE;
+
+    private static final int[] SNOW_IGNORE = IntStream.concat(Arrays.stream(RegistryEntries.WATER_IDS), Arrays.stream(RegistryEntries.ICE_IDS)).toArray();
 
     private final Snowrest plugin;
     private final ProtocolManager protocol;
@@ -55,12 +60,11 @@ public final class PacketListeners {
         }
 
         if(config.isWaterFrozen()) {
-            waterReplacements = config.waterReplacement().stream().mapToInt(Integer::intValue).toArray();
+            waterReplacements = config.waterReplacement().stream().map(BlockConverter::BlockStateToId).mapToInt(Integer::intValue).toArray();
         } else {
             waterReplacements = new int[0];        }
-
         if(config.isSurfaceCovered()) {
-            surfaceReplacements = config.surfaceReplacement().stream().mapToInt(Integer::intValue).toArray();
+            surfaceReplacements = config.surfaceReplacement().stream().map(BlockConverter::BlockStateToId).mapToInt(Integer::intValue).toArray();
         } else {
             surfaceReplacements = new int[0];
         }
@@ -151,7 +155,7 @@ public final class PacketListeners {
 
                 iceSnowEditor.offsetY(-1);
 
-                HeightmapEditor[] splitEditor = iceSnowEditor.separate(sections, EntryHolder.of(RegistryIDs.WATER_BLOCKS));
+                HeightmapEditor[] splitEditor = iceSnowEditor.separate(sections, EntryHolder.of(SNOW_IGNORE));
                 HeightmapEditor iceHMEditor = splitEditor[0];
                 HeightmapEditor snowHMEditor = splitEditor[1];
 
@@ -173,14 +177,14 @@ public final class PacketListeners {
                     ContainerEditor blockStateEditor = ContainerEditor.ofBlockState(section.blockStates(), chunkKey)
                             .set(iceHeightmapSec, EntryHolder.of(waterReplacements))
                             .set(snowHeightmapSec, EntryHolder.of(surfaceReplacements))
-                            .replaceExcept(otherHeightmapSec, RegistryIDs.AIR_STATE_IDS, EntryHolder.of(0));
+                            .replaceExcept(otherHeightmapSec, RegistryEntries.AIR_IDS, EntryHolder.of(0));
 
                     section.setBlockStates(blockStateEditor.buildBlockStates());
 
 
 
                     ContainerEditor biomeEditor = ContainerEditor.ofBiome(section.biomes(), chunkKey)
-                            .set(EntryHolder.of(RegistryIDs.SNOW_BIOME));
+                            .set(EntryHolder.of(RegistryEntries.SNOW_BIOME));
 
                     section.setBiomes(biomeEditor.buildBiomes());
                 }

@@ -1,22 +1,21 @@
 package net.qilla.snowrest;
 
 import net.qilla.snowrest.data.DataPersistent;
-import net.qilla.snowrest.data.RegistryIDs;
+import net.qilla.snowrest.data.RegistryEntries;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public final class ChunkSection {
+
     private short blockCount; //Short
     private PaletteContainer blockStates;
     private PaletteContainer biomes;
-    private boolean dirty;
 
     public ChunkSection(short blockCount, PaletteContainer blockStates, PaletteContainer biomes) {
         this.blockCount = blockCount;
         this.blockStates = blockStates;
         this.biomes = biomes;
-        this.dirty = false;
     }
 
     public short blockCount() {
@@ -37,14 +36,13 @@ public final class ChunkSection {
 
     public void setBlockStates(PaletteContainer blockStates) {
         this.blockStates = blockStates;
-        this.dirty = true;
 
         int[] unpacked = blockStates.data().unpacked();
         short blockCount = 0;
 
         Set<Integer> airIndexes = new HashSet<>();
         for(int paletteIndex = 0; paletteIndex < blockStates.paletteLength(); paletteIndex++) {
-            for(int air : RegistryIDs.AIR_STATE_IDS) {
+            for(int air : RegistryEntries.AIR_IDS) {
                 if(blockStates.palette()[paletteIndex] == air) {
                     airIndexes.add(air);
                     break;
