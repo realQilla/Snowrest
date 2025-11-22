@@ -31,7 +31,7 @@ public final class Snowrest extends JavaPlugin {
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             final Commands commands = event.registrar();
 
-            new SnowrestCommand(this, commands).register();
+            new SnowrestCommand(config, commands).register();
         });
     }
 

@@ -18,10 +18,13 @@ public final class RegistryEntries {
             BlockType.PACKED_ICE.createBlockData().createBlockState(),
             BlockType.BLUE_ICE.createBlockData().createBlockState()
     );
-    public static final int SNOW_BIOME = CraftRegistry.getMinecraftRegistry().lookupOrThrow(Registries.BIOME).getIdOrThrow(
-            CraftRegistry.getMinecraftRegistry().lookupOrThrow(Registries.BIOME).getValue(Biomes.SNOWY_PLAINS));
+    public static final int SNOW_BIOME = CraftRegistry.getMinecraftRegistry()
+            .lookupOrThrow(Registries.BIOME)
+            .getIdOrThrow(CraftRegistry.getMinecraftRegistry()
+                            .lookupOrThrow(Registries.BIOME)
+                            .getValue(Biomes.SNOWY_PLAINS));
 
-    public static final int[] AIR_IDS = RegistryEntries.AIR_STATES.stream().map(BlockConverter::BlockStateToId).mapToInt(Integer::intValue).toArray();
-    public static final int[] WATER_IDS = RegistryEntries.WATER_STATES.stream().map(BlockConverter::BlockStateToId).mapToInt(Integer::intValue).toArray();
-    public static final int[] ICE_IDS = RegistryEntries.ICE_STATES.stream().map(BlockConverter::BlockStateToId).mapToInt(Integer::intValue).toArray();
+    public static final int[] AIR_IDS = BlockConverter.BlockStateToId(RegistryEntries.AIR_STATES);
+    public static final int[] WATER_IDS = BlockConverter.BlockStateToId(RegistryEntries.WATER_STATES);
+    public static final int[] ICE_IDS = BlockConverter.BlockStateToId(RegistryEntries.ICE_STATES);
 }

@@ -15,6 +15,16 @@ public final class BlockConverter {
         return Block.getId(craftBlockState.getHandle());
     }
 
+    public static int[] BlockStateToId(@NotNull List<BlockState> blockStates) {
+        int[] ids = new int[blockStates.size()];
+
+        for(int i = 0; i < blockStates.size(); i++) {
+            ids[i] = BlockStateToId(blockStates.get(i));
+        }
+
+        return ids;
+    }
+
     public static @NotNull List<String> BlockStatesToString(@NotNull List<BlockState> blockStates) {
         List<String> stateStrings = new ArrayList<>();
 

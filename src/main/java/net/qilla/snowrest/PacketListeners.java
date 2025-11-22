@@ -2,7 +2,6 @@ package net.qilla.snowrest;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.async.AsyncFilterManager;
 import com.comphenix.protocol.events.*;
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.wrappers.EnumWrappers;
@@ -27,10 +26,10 @@ import java.util.stream.IntStream;
  */
 
 public final class PacketListeners {
-    private static final Logger LOGGER = Snowrest.logger();
-    private static PacketListeners INSTANCE;
-
     private static final int[] SNOW_IGNORE = IntStream.concat(Arrays.stream(RegistryEntries.WATER_IDS), Arrays.stream(RegistryEntries.ICE_IDS)).toArray();
+
+    private static PacketListeners INSTANCE;
+    private static final Logger LOGGER = Snowrest.logger();
 
     private final Snowrest plugin;
     private final ProtocolManager protocol;
@@ -65,11 +64,11 @@ public final class PacketListeners {
         }
 
         if(config.isWaterFrozen()) {
-            waterReplacements = config.waterReplacement().stream().map(BlockConverter::BlockStateToId).mapToInt(Integer::intValue).toArray();
+            waterReplacements = BlockConverter.BlockStateToId(config.waterReplacement());
         } else {
             waterReplacements = new int[0];        }
         if(config.isSurfaceCovered()) {
-            surfaceReplacements = config.surfaceReplacement().stream().map(BlockConverter::BlockStateToId).mapToInt(Integer::intValue).toArray();
+            surfaceReplacements = BlockConverter.BlockStateToId(config.surfaceReplacement());
         } else {
             surfaceReplacements = new int[0];
         }

@@ -26,17 +26,13 @@ public final class SnowrestCommand {
     private final String addArg = "add";
     private final String removeArg = "remove";
     private final String resetArg = "reset";
-    private final String configArg = "config";
-    private final String saveArg = "save";
 
     private final Commands commands;
     private final SnowrestConfig config;
-    private final Snowrest plugin;
 
-    public SnowrestCommand(@NotNull final Snowrest plugin, @NotNull final Commands commands) {
+    public SnowrestCommand(@NotNull final SnowrestConfig config, @NotNull final Commands commands) {
         this.commands = commands;
-        this.config = plugin.config();
-        this.plugin = plugin;
+        this.config = config;
     }
 
     public void register() {
@@ -122,20 +118,21 @@ public final class SnowrestCommand {
     private int surfaceBlocks(CommandContext<CommandSourceStack> ctx, boolean add) {
         final CommandSender sender = ctx.getSource().getSender();
         BlockState blockState = ctx.getArgument(blockArg, BlockState.class);
+        String blockName = blockState.getBlockData().getAsString();
 
         if(add) {
             if(config.surfaceReplacement().contains(blockState)) {
-                sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Block \"" + blockState.getBlockData().getAsString() + "\" is already added to the surface replacement list.</red>"));
+                sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Block \"" + blockName + "\" is already added to the surface replacement list.</red>"));
             } else {
                 config.addSurfaceCover(blockState);
-                sender.sendMessage(MiniMessage.miniMessage().deserialize("<green>Block \"" + blockState.getBlockData().getAsString() + "\" has been added to the surface replacement list.</green>"));
+                sender.sendMessage(MiniMessage.miniMessage().deserialize("<green>Block \"" + blockName + "\" has been added to the surface replacement list.</green>"));
             }
         } else {
             if(!config.surfaceReplacement().contains(blockState)) {
-                sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Block \"" + blockState.getBlockData().getAsString() + "\" is not added to the surface replacement list.</red>"));
+                sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Block \"" + blockName + "\" is not added to the surface replacement list.</red>"));
             } else {
                 config.removeSurfaceCover(blockState);
-                sender.sendMessage(MiniMessage.miniMessage().deserialize("<green>Block \"" + blockState.getBlockData().getAsString() + "\" has been removed from the surface replacement list.</green>"));
+                sender.sendMessage(MiniMessage.miniMessage().deserialize("<green>Block \"" + blockName + "\" has been removed from the surface replacement list.</green>"));
             }
         }
 
@@ -145,20 +142,21 @@ public final class SnowrestCommand {
     private int waterBlocks(CommandContext<CommandSourceStack> ctx, boolean add) {
         final CommandSender sender = ctx.getSource().getSender();
         BlockState blockState = ctx.getArgument(blockArg, BlockState.class);
+        String blockName = blockState.getBlockData().getAsString();
 
         if(add) {
             if(config.waterReplacement().contains(blockState)) {
-                sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Block \"" + blockState.getBlockData().getAsString() + "\" is already added to the water replacement list.</red>"));
+                sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Block \"" + blockName + "\" is already added to the water replacement list.</red>"));
             } else {
                 config.addWaterReplacement(blockState);
-                sender.sendMessage(MiniMessage.miniMessage().deserialize("<green>Block \"" + blockState.getBlockData().getAsString() + "\" has been added to the water replacement list.</green>"));
+                sender.sendMessage(MiniMessage.miniMessage().deserialize("<green>Block \"" + blockName + "\" has been added to the water replacement list.</green>"));
             }
         } else {
             if(!config.waterReplacement().contains(blockState)) {
-                sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Block \"" + blockState.getBlockData().getAsString() + "\" is not added to the water replacement list.</red>"));
+                sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Block \"" + blockName + "\" is not added to the water replacement list.</red>"));
             } else {
                 config.removeWaterReplacement(blockState);
-                sender.sendMessage(MiniMessage.miniMessage().deserialize("<green>Block \"" + blockState.getBlockData().getAsString() + "\" has been removed from the water replacement list.</green>"));
+                sender.sendMessage(MiniMessage.miniMessage().deserialize("<green>Block \"" + blockName + "\" has been removed from the water replacement list.</green>"));
             }
         }
 
