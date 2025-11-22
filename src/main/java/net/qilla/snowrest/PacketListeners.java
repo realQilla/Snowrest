@@ -2,6 +2,7 @@ package net.qilla.snowrest;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.async.AsyncFilterManager;
 import com.comphenix.protocol.events.*;
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.wrappers.EnumWrappers;
@@ -20,6 +21,10 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import java.util.Arrays;
 import java.util.stream.IntStream;
+
+/**
+ * No processing on async threads until I man the fuck up
+ */
 
 public final class PacketListeners {
     private static final Logger LOGGER = Snowrest.logger();
@@ -136,6 +141,7 @@ public final class PacketListeners {
             @Override
             public void onPacketSending(PacketEvent event) {
                 PacketContainer packet = event.getPacket();
+
                 StructureModifier<WrappedLevelChunkData.ChunkData> wrapperChunkData = packet.getLevelChunkData();
                 WrappedLevelChunkData.ChunkData chunkData = wrapperChunkData.readSafely(0);
                 int chunkX = packet.getIntegers().read(0);
@@ -148,6 +154,7 @@ public final class PacketListeners {
                 }
 
                 ProcessedChunk dissect = ProcessedChunk.of(Unpooled.wrappedBuffer(chunkData.getBuffer()));
+
                 ChunkSection[] sections = dissect.sections();
 
                 HeightmapEditor iceSnowEditor = HeightmapEditor.of(chunkData.getHeightmaps().get(EnumWrappers.HeightmapType.MOTION_BLOCKING));

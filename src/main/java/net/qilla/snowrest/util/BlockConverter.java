@@ -5,7 +5,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.block.BlockState;
 import org.bukkit.craftbukkit.block.CraftBlockState;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class BlockConverter {
     public static int BlockStateToId(@NotNull BlockState blockState) {
@@ -14,17 +15,25 @@ public final class BlockConverter {
         return Block.getId(craftBlockState.getHandle());
     }
 
-    public static @NotNull String BlockStateToString(@NotNull BlockState blockState) {
-        CraftBlockState craftBlockState = (CraftBlockState) blockState;
+    public static @NotNull List<String> BlockStatesToString(@NotNull List<BlockState> blockStates) {
+        List<String> stateStrings = new ArrayList<>();
 
-        return craftBlockState.getBlockData().getAsString();
+        for(BlockState state : blockStates) {
+            stateStrings.add(state.getBlockData().getAsString());
+        }
+
+        return stateStrings;
     }
 
-    public static @Nullable BlockState StringToBlockState(@NotNull String stateID) {
-        try {
-            return Bukkit.getServer().createBlockData(stateID).createBlockState();
-        } catch(IllegalArgumentException ignored) {
-            return null;
+    public static @NotNull List<BlockState> StringToBlockState(@NotNull List<String> stateIDs) {
+        List<BlockState> blockStates = new ArrayList<>();
+
+        for(String id : stateIDs) {
+            try {
+                blockStates.add(Bukkit.getServer().createBlockData(id).createBlockState());
+            } catch(IllegalArgumentException ignored) {}
         }
+
+        return blockStates;
     }
 }

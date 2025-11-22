@@ -6,7 +6,6 @@ import net.qilla.snowrest.util.BlockConverter;
 import org.bukkit.block.BlockState;
 import org.jetbrains.annotations.NotNull;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public final class SnowrestConfig {
     private static final List<BlockState> DEFAULT_WATER_REPLACEMENT = new ArrayList<>(RegistryEntries.ICE_STATES);
@@ -32,17 +31,14 @@ public final class SnowrestConfig {
         this.waterReplacement = getBlockState("settings.water.blocks", DEFAULT_WATER_REPLACEMENT);
     }
 
+    @SuppressWarnings("unchecked")
     private @NotNull List<BlockState> getBlockState(@NotNull String path, @NotNull List<BlockState> defaultBlocks) {
-        List<String> entries = (List<String>) configFile.config().getList(path);
-
-        if(entries == null) return defaultBlocks;
-
-        return entries.stream().map(BlockConverter::StringToBlockState).filter(Objects::nonNull).collect(Collectors.toList());
+        return BlockConverter.StringToBlockState((List<String>) configFile.config().getList(path, defaultBlocks));
     }
 
     public void resetDefaults() {
-        configFile.config().set("settings.surface.blocks", DEFAULT_SURFACE_REPLACEMENT.stream().map(BlockConverter::BlockStateToString).toList());
-        configFile.config().set("settings.water.blocks", DEFAULT_WATER_REPLACEMENT.stream().map(BlockConverter::BlockStateToString).toList());
+        configFile.config().set("settings.surface.blocks", BlockConverter.BlockStatesToString(DEFAULT_SURFACE_REPLACEMENT));
+        configFile.config().set("settings.water.blocks", BlockConverter.BlockStatesToString(DEFAULT_WATER_REPLACEMENT));
         this.waterReplacement = new ArrayList<>(DEFAULT_WATER_REPLACEMENT);
         this.surfaceCover = new ArrayList<>(DEFAULT_SURFACE_REPLACEMENT);
         notifySubscribers();
@@ -108,42 +104,42 @@ public final class SnowrestConfig {
     public void setWaterReplacement(@NotNull List<BlockState> waterBlocks) {
         this.waterReplacement = waterBlocks;
         notifySubscribers();
-        configFile.config().set("settings.water.blocks", waterBlocks.stream().map(BlockConverter::BlockStateToString).toList());
+        configFile.config().set("settings.water.blocks", BlockConverter.BlockStatesToString(waterReplacement));
         configFile.save();
     }
 
     public void setSurfaceCover(@NotNull List<BlockState> snowBlocks) {
         this.surfaceCover = snowBlocks;
         notifySubscribers();
-        configFile.config().set("settings.surface.blocks", snowBlocks.stream().map(BlockConverter::BlockStateToString).toList());
+        configFile.config().set("settings.surface.blocks", BlockConverter.BlockStatesToString(surfaceCover));
         configFile.save();
     }
 
     public void addWaterReplacement(@NotNull BlockState block) {
         this.waterReplacement.add(block);
         notifySubscribers();
-        configFile.config().set("settings.water.blocks", this.waterReplacement.stream().map(BlockConverter::BlockStateToString).toList());
+        configFile.config().set("settings.water.blocks", BlockConverter.BlockStatesToString(waterReplacement));
         configFile.save();
     }
 
     public void addSurfaceCover(@NotNull BlockState block) {
         this.surfaceCover.add(block);
         notifySubscribers();
-        configFile.config().set("settings.surface.blocks", this.surfaceCover.stream().map(BlockConverter::BlockStateToString).toList());
+        configFile.config().set("settings.surface.blocks", BlockConverter.BlockStatesToString(surfaceCover));
         configFile.save();
     }
 
     public void removeWaterReplacement(@NotNull BlockState block) {
         this.waterReplacement.remove(block);
         notifySubscribers();
-        configFile.config().set("settings.water.blocks", this.waterReplacement.stream().map(BlockConverter::BlockStateToString).toList());
+        configFile.config().set("settings.water.blocks", BlockConverter.BlockStatesToString(waterReplacement));
         configFile.save();
     }
 
     public void removeSurfaceCover(@NotNull BlockState block) {
         this.surfaceCover.remove(block);
         notifySubscribers();
-        configFile.config().set("settings.surface.blocks", this.surfaceCover.stream().map(BlockConverter::BlockStateToString).toList());
+        configFile.config().set("settings.surface.blocks", BlockConverter.BlockStatesToString(surfaceCover));
         configFile.save();
     }
 

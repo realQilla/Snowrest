@@ -33,7 +33,7 @@ public final class SnowrestConfigFile {
             config.save(file);
             return true;
         } catch (IOException e) {
-            LOGGER.error("Failed to save config file", e);
+            LOGGER.error("Failed to save Snowrest's configuration", e);
         }
         return false;
     }
