@@ -1,15 +1,16 @@
-package net.qilla.snowrest;
+package net.qilla.snowrest.holder;
 
+import net.qilla.snowrest.Snowrest;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-public final class EntryHolder {
+public final class EntryDataHolder implements EntryData {
     private static final Logger LOGGER = Snowrest.logger();
 
     private final IdEntry[] entries;
     private final int[] ids;
 
-    private EntryHolder(@NotNull IdEntry[] entries) {
+    private EntryDataHolder(@NotNull IdEntry[] entries) {
         this.entries = entries;
         this.ids = new int[entries.length];
 
@@ -18,7 +19,7 @@ public final class EntryHolder {
         }
     }
 
-    public static EntryHolder of(int... entries) {
+    public static EntryData of(int... entries) {
         int size = entries.length;
         IdEntry[] idEntries = new IdEntry[size];
 
@@ -26,18 +27,19 @@ public final class EntryHolder {
             idEntries[i] = IdEntry.of(entries[i]);
         }
 
-        return new EntryHolder(idEntries);
+        return new EntryDataHolder(idEntries);
     }
 
-    public static EntryHolder of(IdEntry... entries) {
-        return new EntryHolder(entries);
+    public static EntryData of(IdEntry... entries) {
+        return new EntryDataHolder(entries);
     }
 
-    public IdEntry[] entries() {
+    @Override
+    public @NotNull IdEntry[] entries() {
         return entries;
     }
 
-    public IdEntry entry(int index) {
+    public @NotNull IdEntry entry(int index) {
         if(index < 0 || index >= entries.length) {
             LOGGER.warn("Index {} out of pounds in EntryContainer", index);
             return IdEntry.of(0);
@@ -45,14 +47,17 @@ public final class EntryHolder {
         return entries[index];
     }
 
+    @Override
     public int entryId(int index) {
         return entry(index).id();
     }
 
+    @Override
     public int[] entryIds() {
         return ids;
     }
 
+    @Override
     public int size() {
         return entries.length;
     }

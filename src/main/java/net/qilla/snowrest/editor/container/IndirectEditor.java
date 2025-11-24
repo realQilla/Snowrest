@@ -1,7 +1,7 @@
-package net.qilla.snowrest.editor;
+package net.qilla.snowrest.editor.container;
 
-import net.qilla.snowrest.EntryHolder;
-import net.qilla.snowrest.PaletteContainer;
+import net.qilla.snowrest.holder.EntryData;
+import net.qilla.snowrest.holder.PaletteContainer;
 import org.jetbrains.annotations.NotNull;
 import java.util.SplittableRandom;
 
@@ -19,7 +19,7 @@ public final class IndirectEditor extends AbstractContainerEditor {
     }
 
     @Override
-    public @NotNull ContainerEditor set(int[] positions, @NotNull EntryHolder holder) {
+    public @NotNull ContainerEditor set(int[] positions, @NotNull EntryData holder) {
         if(positions.length == 0) return this;
         if(holder.size() == 0) return this;
 
@@ -33,7 +33,7 @@ public final class IndirectEditor extends AbstractContainerEditor {
     }
 
     @Override
-    public @NotNull ContainerEditor set(@NotNull EntryHolder holder) {
+    public @NotNull ContainerEditor set(@NotNull EntryData holder) {
         if(holder.size() > 1) {
             palette = holder.entryIds();
 
@@ -50,7 +50,7 @@ public final class IndirectEditor extends AbstractContainerEditor {
     }
 
     @Override
-    public @NotNull ContainerEditor replace(int[] lookup, @NotNull EntryHolder replacement) {
+    public @NotNull ContainerEditor replace(int[] lookup, @NotNull EntryData replacement) {
         if(lookup.length == 0) return this;
         if(replacement.size() == 0) return this;
 
@@ -70,7 +70,7 @@ public final class IndirectEditor extends AbstractContainerEditor {
     }
 
     @Override
-    public @NotNull ContainerEditor replace(int[] positions, int[] lookup, @NotNull EntryHolder replacement) {
+    public @NotNull ContainerEditor replace(int[] positions, int[] lookup, @NotNull EntryData replacement) {
         if(replacement.size() == 0) return this;
 
         for(int index : positions) {
@@ -89,7 +89,7 @@ public final class IndirectEditor extends AbstractContainerEditor {
     }
 
     @Override
-    public @NotNull ContainerEditor replaceExcept(int[] ignore, @NotNull EntryHolder replacement) {
+    public @NotNull ContainerEditor replaceExcept(int[] ignore, @NotNull EntryData replacement) {
         if(replacement.size() == 0) return this;
 
         for(int index : super.indexes) {
@@ -108,7 +108,7 @@ public final class IndirectEditor extends AbstractContainerEditor {
     }
 
     @Override
-    public @NotNull ContainerEditor replaceExcept(int[] positions, int[] ignore, @NotNull EntryHolder replacement) {
+    public @NotNull ContainerEditor replaceExcept(int[] positions, int[] ignore, @NotNull EntryData replacement) {
         if(replacement.size() == 0) return this;
 
         for(int index : positions) {

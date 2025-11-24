@@ -1,7 +1,7 @@
-package net.qilla.snowrest.editor;
+package net.qilla.snowrest.editor.container;
 
-import net.qilla.snowrest.EntryHolder;
-import net.qilla.snowrest.PaletteContainer;
+import net.qilla.snowrest.holder.EntryData;
+import net.qilla.snowrest.holder.PaletteContainer;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -16,14 +16,14 @@ public interface ContainerEditor {
      * @param holder Entry container, each entry consists of a value and a chance value
      * @return Dynamic current, promoted, or demoted container editor
      */
-    @NotNull ContainerEditor set(int[] positions, @NotNull EntryHolder holder);
+    @NotNull ContainerEditor set(int[] positions, @NotNull EntryData holder);
 
     /**
      * Set all positions to values in the holder
      * @param holder Entry container, each entry consists of a value and a chance value
      * @return Dynamic current, promoted, or demoted container editor
      */
-    @NotNull ContainerEditor set(@NotNull EntryHolder holder);
+    @NotNull ContainerEditor set(@NotNull EntryData holder);
 
     /**
      * Replace all positions that use the specified palette with values in the holder
@@ -31,7 +31,7 @@ public interface ContainerEditor {
      * @param replacement Entry container, each entry consists of a value and a chance value
      * @return Dynamic current, promoted, or demoted container editor
      */
-    @NotNull ContainerEditor replace(int[] lookup, @NotNull EntryHolder replacement);
+    @NotNull ContainerEditor replace(int[] lookup, @NotNull EntryData replacement);
 
     /**
      * Replace all given positions that use the specified palette with values in the holder
@@ -39,7 +39,7 @@ public interface ContainerEditor {
      * @param replacement Entry container, each entry consists of a value and a chance value
      * @return Dynamic current, promoted, or demoted container editor
      */
-    @NotNull ContainerEditor replace(int[] positions, int[] lookup, @NotNull EntryHolder replacement);
+    @NotNull ContainerEditor replace(int[] positions, int[] lookup, @NotNull EntryData replacement);
 
     /**
      * Replace all positions that DO NOT use the specified palette with values in the holder
@@ -47,7 +47,7 @@ public interface ContainerEditor {
      * @param replacement Entry container, each entry consists of a value and a chance value
      * @return Dynamic current, promoted, or demoted container editor
      */
-    @NotNull ContainerEditor replaceExcept(int[] ignore, @NotNull EntryHolder replacement);
+    @NotNull ContainerEditor replaceExcept(int[] ignore, @NotNull EntryData replacement);
 
     /**
      * Replace all given positions that DO NOT use the specified palette with values in the holder
@@ -56,7 +56,7 @@ public interface ContainerEditor {
      * @param replacement Entry container, each entry consists of a value and a chance value
      * @return Dynamic current, promoted, or demoted container editor
      */
-    @NotNull ContainerEditor replaceExcept(int[] positions, int[] ignore, @NotNull EntryHolder replacement);
+    @NotNull ContainerEditor replaceExcept(int[] positions, int[] ignore, @NotNull EntryData replacement);
 
 
     /**

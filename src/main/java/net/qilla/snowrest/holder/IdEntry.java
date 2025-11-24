@@ -1,4 +1,4 @@
-package net.qilla.snowrest;
+package net.qilla.snowrest.holder;
 
 public record IdEntry(int id, float chance) {
 

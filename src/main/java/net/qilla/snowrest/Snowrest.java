@@ -6,6 +6,7 @@ import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.qilla.snowrest.commands.SnowrestCommand;
 import net.qilla.snowrest.config.SnowrestConfig;
+import net.qilla.snowrest.config.SnowrestConfigImpl;
 import net.qilla.snowrest.file.SnowrestConfigFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +23,7 @@ public final class Snowrest extends JavaPlugin {
         LOGGER = getSLF4JLogger();
         this.protocolManager = ProtocolLibrary.getProtocolManager();
         this.configFile = new SnowrestConfigFile(this);
-        this.config = new SnowrestConfig(configFile);
+        this.config = new SnowrestConfigImpl(configFile);
         PacketListeners.init(this);
     }
 
@@ -30,6 +31,8 @@ public final class Snowrest extends JavaPlugin {
     public void onEnable() {
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             final Commands commands = event.registrar();
+
+
 
             new SnowrestCommand(config, commands).register();
         });

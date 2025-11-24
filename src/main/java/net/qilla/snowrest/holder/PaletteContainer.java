@@ -1,4 +1,4 @@
-package net.qilla.snowrest;
+package net.qilla.snowrest.holder;
 
 import net.qilla.snowrest.bitstorage.ProcessedBits;
 import net.qilla.snowrest.util.PaletteUtil;
@@ -34,7 +34,7 @@ public final class PaletteContainer {
         return this.paletteLength() == 0 || this.data.size() == 0;
     }
 
-    public int[] match(int[] positions, EntryHolder holder) {
+    public int[] match(int[] positions, EntryData holder) {
         int[] unpacked = this.data.unpacked();
 
         int[] entryIndexes = PaletteUtil.getIndexes(holder.entryIds(), this.palette);
@@ -51,7 +51,7 @@ public final class PaletteContainer {
         return Arrays.copyOf(temp, count);
     }
 
-    public int[] notMatch(int[] positions, EntryHolder holder) {
+    public int[] notMatch(int[] positions, EntryData holder) {
         int[] unpacked = this.data.unpacked();
 
         int[] entryIndexes = PaletteUtil.getIndexes(holder.entryIds(), this.palette);

@@ -7,7 +7,6 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.qilla.snowrest.Snowrest;
 import net.qilla.snowrest.config.SnowrestConfig;
 import net.qilla.snowrest.data.TxtDecorations;
 import org.bukkit.block.BlockState;

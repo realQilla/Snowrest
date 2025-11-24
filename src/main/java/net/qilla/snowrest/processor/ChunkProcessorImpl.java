@@ -1,4 +1,4 @@
-package net.qilla.snowrest;
+package net.qilla.snowrest.processor;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -6,34 +6,37 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.qilla.snowrest.bitstorage.ProcessedBits;
 import net.qilla.snowrest.data.DataMasks;
 import net.qilla.snowrest.data.DataPersistent;
+import net.qilla.snowrest.holder.ChunkSection;
+import net.qilla.snowrest.holder.ChunkSectionData;
+import net.qilla.snowrest.holder.PaletteContainer;
 import org.jetbrains.annotations.NotNull;
 
-public final class ProcessedChunk {
+public final class ChunkProcessorImpl implements ChunkProcessor {
     private final FriendlyByteBuf byteBuf;
     private final ChunkSection[] sections;
 
-    private ProcessedChunk(@NotNull FriendlyByteBuf byteBuf) {
+    private ChunkProcessorImpl(@NotNull FriendlyByteBuf byteBuf) {
         this.byteBuf = byteBuf;
         this.sections = separateSections();
     }
 
-    public static ProcessedChunk of(ByteBuf byteBuf) {
-        return new ProcessedChunk(new FriendlyByteBuf(byteBuf));
+    public static ChunkProcessor of(@NotNull ByteBuf byteBuf) {
+        return new ChunkProcessorImpl(new FriendlyByteBuf(byteBuf));
     }
 
-    public static ProcessedChunk of(FriendlyByteBuf byteBuf) {
-        return new ProcessedChunk(byteBuf);
+    public static ChunkProcessor of(@NotNull FriendlyByteBuf byteBuf) {
+        return new ChunkProcessorImpl(byteBuf);
     }
 
     private ChunkSection[] separateSections() {
-        ChunkSection[] chunkSections = new ChunkSection[DataPersistent.SECTIONS_PER_CHUNK];
+        ChunkSection[] chunkSections = new ChunkSectionData[DataPersistent.SECTIONS_PER_CHUNK];
 
         for(int i = 0; i < DataPersistent.SECTIONS_PER_CHUNK; i++) {
             short blockCount = byteBuf.readShort();
             PaletteContainer blockStates = this.separateSectionBlockStates();
             PaletteContainer biomes = this.separateSectionBiomes();
 
-            chunkSections[i] = new ChunkSection(blockCount, blockStates, biomes);
+            chunkSections[i] = new ChunkSectionData(blockCount, blockStates, biomes);
         }
 
         return chunkSections;
@@ -127,6 +130,7 @@ public final class ProcessedChunk {
         return container;
     }
 
+    @Override
     public byte[] buildBuffer() {
         FriendlyByteBuf byteBuf = new FriendlyByteBuf(Unpooled.buffer());
 
@@ -196,10 +200,12 @@ public final class ProcessedChunk {
         }
     }
 
+    @Override
     public ChunkSection[] sections() {
         return this.sections;
     }
 
+    @Override
     public int dataSize() {
         return this.byteBuf.readableBytes();
     }

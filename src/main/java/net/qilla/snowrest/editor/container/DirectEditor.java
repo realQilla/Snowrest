@@ -1,7 +1,7 @@
-package net.qilla.snowrest.editor;
+package net.qilla.snowrest.editor.container;
 
-import net.qilla.snowrest.EntryHolder;
-import net.qilla.snowrest.PaletteContainer;
+import net.qilla.snowrest.holder.EntryData;
+import net.qilla.snowrest.holder.PaletteContainer;
 import org.jetbrains.annotations.NotNull;
 import java.util.SplittableRandom;
 
@@ -23,32 +23,32 @@ public final class DirectEditor extends AbstractContainerEditor {
     }
 
     @Override
-    public @NotNull ContainerEditor set(int[] positions, @NotNull EntryHolder holder) {
+    public @NotNull ContainerEditor set(int[] positions, @NotNull EntryData holder) {
         return null;
     }
 
     @Override
-    public @NotNull ContainerEditor set(@NotNull EntryHolder holder) {
+    public @NotNull ContainerEditor set(@NotNull EntryData holder) {
         return null;
     }
 
     @Override
-    public @NotNull ContainerEditor replace(int[] lookup, @NotNull EntryHolder replacement) {
+    public @NotNull ContainerEditor replace(int[] lookup, @NotNull EntryData replacement) {
         return null;
     }
 
     @Override
-    public @NotNull ContainerEditor replace(int[] positions, int[] lookup, @NotNull EntryHolder replacement) {
+    public @NotNull ContainerEditor replace(int[] positions, int[] lookup, @NotNull EntryData replacement) {
         return null;
     }
 
     @Override
-    public @NotNull ContainerEditor replaceExcept(int[] ignore, @NotNull EntryHolder replacement) {
+    public @NotNull ContainerEditor replaceExcept(int[] ignore, @NotNull EntryData replacement) {
         return null;
     }
 
     @Override
-    public @NotNull ContainerEditor replaceExcept(int[] positions, int[] ignore, @NotNull EntryHolder replacement) {
+    public @NotNull ContainerEditor replaceExcept(int[] positions, int[] ignore, @NotNull EntryData replacement) {
         return null;
     }
 

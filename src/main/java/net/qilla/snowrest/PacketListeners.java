@@ -10,8 +10,13 @@ import io.netty.buffer.Unpooled;
 import net.qilla.snowrest.config.SnowrestConfig;
 import net.qilla.snowrest.data.DataPersistent;
 import net.qilla.snowrest.data.RegistryEntries;
-import net.qilla.snowrest.editor.ContainerEditor;
-import net.qilla.snowrest.editor.HeightmapEditor;
+import net.qilla.snowrest.editor.container.ContainerEditor;
+import net.qilla.snowrest.editor.HeightmapEditorImpl;
+import net.qilla.snowrest.editor.container.HeightmapEdit;
+import net.qilla.snowrest.holder.ChunkSection;
+import net.qilla.snowrest.holder.EntryDataHolder;
+import net.qilla.snowrest.processor.ChunkProcessor;
+import net.qilla.snowrest.processor.ChunkProcessorImpl;
 import net.qilla.snowrest.util.BlockConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -152,18 +157,18 @@ public final class PacketListeners {
                     return;
                 }
 
-                ProcessedChunk dissect = ProcessedChunk.of(Unpooled.wrappedBuffer(chunkData.getBuffer()));
+                ChunkProcessor dissect = ChunkProcessorImpl.of(Unpooled.wrappedBuffer(chunkData.getBuffer()));
 
                 ChunkSection[] sections = dissect.sections();
 
-                HeightmapEditor iceSnowEditor = HeightmapEditor.of(chunkData.getHeightmaps().get(EnumWrappers.HeightmapType.MOTION_BLOCKING));
-                HeightmapEditor remainingEditor = iceSnowEditor.copy();
+                HeightmapEdit iceSnowEditor = HeightmapEditorImpl.of(chunkData.getHeightmaps().get(EnumWrappers.HeightmapType.MOTION_BLOCKING));
+                HeightmapEdit remainingEditor = iceSnowEditor.copy();
 
                 iceSnowEditor.offsetY(-1);
 
-                HeightmapEditor[] splitEditor = iceSnowEditor.separate(sections, EntryHolder.of(SNOW_IGNORE));
-                HeightmapEditor iceHMEditor = splitEditor[0];
-                HeightmapEditor snowHMEditor = splitEditor[1];
+                HeightmapEdit[] splitEditor = iceSnowEditor.separate(sections, EntryDataHolder.of(SNOW_IGNORE));
+                HeightmapEdit iceHMEditor = splitEditor[0];
+                HeightmapEdit snowHMEditor = splitEditor[1];
 
                 snowHMEditor.offsetY(1);
                 remainingEditor.offsetY(1);
@@ -181,16 +186,16 @@ public final class PacketListeners {
                     int[] otherHeightmapSec = otherHeightmap[sectionIndex];
 
                     ContainerEditor blockStateEditor = ContainerEditor.ofBlockState(section.blockStates(), chunkKey)
-                            .set(iceHeightmapSec, EntryHolder.of(waterReplacements))
-                            .set(snowHeightmapSec, EntryHolder.of(surfaceReplacements))
-                            .replaceExcept(otherHeightmapSec, RegistryEntries.AIR_IDS, EntryHolder.of(0));
+                            .set(iceHeightmapSec, EntryDataHolder.of(waterReplacements))
+                            .set(snowHeightmapSec, EntryDataHolder.of(surfaceReplacements))
+                            .replaceExcept(otherHeightmapSec, RegistryEntries.AIR_IDS, EntryDataHolder.of(0));
 
                     section.setBlockStates(blockStateEditor.buildBlockStates());
 
 
 
                     ContainerEditor biomeEditor = ContainerEditor.ofBiome(section.biomes(), chunkKey)
-                            .set(EntryHolder.of(RegistryEntries.SNOW_BIOME));
+                            .set(EntryDataHolder.of(RegistryEntries.SNOW_BIOME));
 
                     section.setBiomes(biomeEditor.buildBiomes());
                 }

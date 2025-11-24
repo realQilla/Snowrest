@@ -1,7 +1,7 @@
-package net.qilla.snowrest.editor;
+package net.qilla.snowrest.editor.container;
 
-import net.qilla.snowrest.EntryHolder;
-import net.qilla.snowrest.PaletteContainer;
+import net.qilla.snowrest.holder.EntryData;
+import net.qilla.snowrest.holder.PaletteContainer;
 import net.qilla.snowrest.bitstorage.ProcessedBits;
 import net.qilla.snowrest.util.BPEUtil;
 import org.jetbrains.annotations.NotNull;
@@ -198,7 +198,7 @@ public abstract class AbstractContainerEditor implements ContainerEditor {
      * @param holder Entry container, each entry consists of a value and a chance value
      * @return Returns the id of the selected entry
      */
-    protected int randomEntry(@NotNull EntryHolder holder) {
+    protected int randomEntry(@NotNull EntryData holder) {
         if(holder.size() == 1) return holder.entryIds()[0];
         return holder.entryIds()[random.nextInt(holder.size())];
     }

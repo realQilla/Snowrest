@@ -1,19 +1,22 @@
 package net.qilla.snowrest.editor;
 
-import net.qilla.snowrest.ChunkSection;
-import net.qilla.snowrest.PaletteContainer;
+import net.qilla.snowrest.editor.container.HeightmapEdit;
+import net.qilla.snowrest.holder.ChunkSection;
+import net.qilla.snowrest.holder.EntryData;
+import net.qilla.snowrest.holder.PaletteContainer;
 import net.qilla.snowrest.bitstorage.ProcessedBits;
 import net.qilla.snowrest.data.DataPersistent;
-import net.qilla.snowrest.EntryHolder;
 import net.qilla.snowrest.util.PaletteUtil;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public final class HeightmapEditor {
+public final class HeightmapEditorImpl implements HeightmapEdit {
     private int[] heightmap;
 
-    private HeightmapEditor(long[] data, int yOffset) {
+    private HeightmapEditorImpl(long[] data, int yOffset) {
         ProcessedBits processed = ProcessedBits.packed(DataPersistent.HEIGHTMAP_BPE, data, DataPersistent.BLOCKS_PER_HEIGHTMAP);
         int[] rawHeights = processed.unpacked();
         int[] heightmap = new int[DataPersistent.BLOCKS_PER_HEIGHTMAP];
@@ -29,23 +32,24 @@ public final class HeightmapEditor {
         this.heightmap = heightmap;
     }
 
-    private HeightmapEditor(int[] heightmap) {
+    private HeightmapEditorImpl(int[] heightmap) {
         this.heightmap = heightmap;
     }
 
-    public static HeightmapEditor of(long[] packedHeightmap) {
-        return new HeightmapEditor(packedHeightmap, 0);
+    public static @NotNull HeightmapEdit of(long[] packedHeightmap) {
+        return new HeightmapEditorImpl(packedHeightmap, 0);
     }
 
-    public static HeightmapEditor of(long[] packedHeightmap, int yOffset) {
-        return new HeightmapEditor(packedHeightmap, yOffset);
+    public static @NotNull HeightmapEdit of(long[] packedHeightmap, int yOffset) {
+        return new HeightmapEditorImpl(packedHeightmap, yOffset);
     }
 
-    public static HeightmapEditor of(int[] heightmap) {
-        return new HeightmapEditor(heightmap);
+    public static @NotNull HeightmapEdit of(int[] heightmap) {
+        return new HeightmapEditorImpl(heightmap);
     }
 
-    public HeightmapEditor[] separate(ChunkSection[] sections, EntryHolder holder) {
+    @Override
+    public @NotNull HeightmapEdit[] separate(ChunkSection[] sections, @NotNull EntryData holder) {
         int[] firstHeightmap = new int[DataPersistent.BLOCKS_PER_HEIGHTMAP];
         int[] secondHeightmap = new int[DataPersistent.BLOCKS_PER_HEIGHTMAP];
         int firstCount = 0;
@@ -78,12 +82,13 @@ public final class HeightmapEditor {
             else secondHeightmap[secondCount++] = heightmapValue;
         }
 
-        return new HeightmapEditor[]{
-                new HeightmapEditor(Arrays.copyOf(firstHeightmap, firstCount)),
-                new HeightmapEditor(Arrays.copyOf(secondHeightmap, secondCount))
+        return new HeightmapEditorImpl[]{
+                new HeightmapEditorImpl(Arrays.copyOf(firstHeightmap, firstCount)),
+                new HeightmapEditorImpl(Arrays.copyOf(secondHeightmap, secondCount))
         };
     }
 
+    @Override
     public void offsetY(int offset) {
         for(int i = 0; i < heightmap.length; i++) {
             int y = heightmap[i] >> 8;
@@ -97,13 +102,7 @@ public final class HeightmapEditor {
         }
     }
 
-
-    /**
-     * Stacks the heightmap veritically to include positions above
-     * Calling this method more than once is extremely inefficient and will result in duplicate values
-     * @param amount Number of blocks to include in heightmap above original layer
-     */
-
+    @Override
     public void stack(int amount) {
         int[] stackedHeightmap = new int[heightmap.length * (amount + 1)];
         int index = 0;
@@ -122,6 +121,7 @@ public final class HeightmapEditor {
         this.heightmap = stackedHeightmap;
     }
 
+    @Override @SuppressWarnings("unchecked")
     public int[][] build() {
         List<Integer>[] temp = new List[DataPersistent.SECTIONS_PER_CHUNK];
 
@@ -152,11 +152,13 @@ public final class HeightmapEditor {
         return built;
     }
 
+    @Override
     public int[] heightmap() {
         return heightmap;
     }
 
-    public HeightmapEditor copy() {
-        return new HeightmapEditor(this.heightmap.clone());
+    @Override
+    public @NotNull HeightmapEditorImpl copy() {
+        return new HeightmapEditorImpl(this.heightmap.clone());
     }
 }
